@@ -4,8 +4,11 @@ import { useForm } from "react-hook-form";
 import { AuthContext } from "../../providers/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import useAxiosOpen from "../../Hooks/useAxiosOpen";
+import SocialLogin from "../../componenets/SocialLogin/SocialLogin";
 
 const Register = () => {
+  const axiosOpen = useAxiosOpen();
   const {
     register,
     handleSubmit,
@@ -23,16 +26,24 @@ const Register = () => {
       console.log(loggedUser);
       updateUserProfile(data.name, data.photoURL)
         .then(() => {
-          console.log("User Profile Updated");
-          reset();
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "User Created Successfully !",
-            showConfirmButton: false,
-            timer: 1500,
+          // send users data to database
+          const userInfo = {
+            name: data.name,
+            email: data.email,
+          };
+          axiosOpen.post("/users", userInfo).then((res) => {
+            if (res.data.insertedId) {
+              reset();
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "User Created Successfully !",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              navigate("/");
+            }
           });
-          navigate("/");
         })
         .catch((error) => console.log(error));
     });
@@ -147,6 +158,7 @@ const Register = () => {
                 />
               </div>
             </form>
+            <SocialLogin />
           </div>
         </div>
       </div>

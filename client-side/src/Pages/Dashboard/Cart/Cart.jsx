@@ -1,12 +1,12 @@
 import { FaTrashAlt } from "react-icons/fa";
 import useCart from "../../../Hooks/useCart";
 import Swal from "sweetalert2";
-import useAxios from "../../../Hooks/useAxios";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const Cart = () => {
   const [cart, refetch] = useCart();
   const totalPrice = cart.reduce((total, item) => total + item.price, 0);
-  const axiosSecure = useAxios();
+  const axiosSecure = useAxiosSecure();
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -80,7 +80,6 @@ const Cart = () => {
                 </th>
               </tr>
             ))}
-            {/* row 1 */}
           </tbody>
         </table>
       </div>
