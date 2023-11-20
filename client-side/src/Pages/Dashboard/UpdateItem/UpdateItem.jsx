@@ -1,17 +1,18 @@
-import { useForm } from "react-hook-form";
+import { useLoaderData } from "react-router-dom";
 import SectionTitle from "../../../componenets/Sectiontitle/Sectiontitle";
-import { FaUtensils } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import Swal from "sweetalert2";
 import useAxiosOpen from "../../../Hooks/useAxiosOpen";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
-import Swal from "sweetalert2";
 
-const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
-const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+const UpdateItem = () => {
+  const { _id, name, category, recipe, image, price } = useLoaderData();
 
-const AddItems = () => {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit } = useForm();
   const axiosOpen = useAxiosOpen();
   const axiosSecure = useAxiosSecure();
+  const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
+  const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
   const onSubmit = async (data) => {
     const imageFile = { image: data.image[0] };
     const res = await axiosOpen.post(image_hosting_api, imageFile, {
@@ -29,25 +30,23 @@ const AddItems = () => {
         image: res.data.data.display_url,
       };
       // send data to database securely
-      const menuRes = await axiosSecure.post("/menu", menuItem);
-      console.log(menuRes.data);
-      if (menuRes.data.insertedId) {
+      const menuRes = await axiosSecure.patch(`/menu/${_id}`, menuItem);
+      if (menuRes.data.modifiedCount > 0) {
         // show success popup
-        reset();
+        // reset();
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: `${data.name} is added to the menu`,
+          title: `${data.name} is updated to the menu`,
           showConfirmButton: false,
           timer: 1500,
         });
       }
     }
-    console.log("image url", res.data);
   };
   return (
     <div>
-      <SectionTitle heading="add an item" subHeading="What's New" />
+      <SectionTitle heading="Update and Item" subHeading="Refresh info" />
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-control w-full my-6 ">
@@ -57,6 +56,7 @@ const AddItems = () => {
             <input
               {...register("name", { required: true })}
               type="text"
+              defaultValue={name}
               placeholder="Recipe Name..."
               className="input input-bordered w-full "
             />
@@ -68,7 +68,7 @@ const AddItems = () => {
                 <span className="label-text">Category*</span>
               </label>
               <select
-                defaultValue="default"
+                defaultValue={category}
                 {...register("category", { required: true })}
                 className="select select-bordered w-full "
               >
@@ -89,6 +89,7 @@ const AddItems = () => {
               </label>
               <input
                 {...register("price", { required: true })}
+                defaultValue={price}
                 type="number"
                 placeholder="price..."
                 className="input input-bordered w-full "
@@ -102,9 +103,13 @@ const AddItems = () => {
             </label>
             <textarea
               {...register("recipe")}
+              defaultValue={recipe}
               className="textarea textarea-bordered h-24"
               placeholder="Bio"
             ></textarea>
+          </div>
+          <div>
+            <img src={image} alt="" />
           </div>
           {/* imatge input */}
           <div className="form-control w-full my-6">
@@ -114,13 +119,11 @@ const AddItems = () => {
               className="file-input w-full max-w-xs"
             />
           </div>
-          <button className="btn">
-            Add item <FaUtensils className="ml-4" />
-          </button>
+          <button className="btn">Update item</button>
         </form>
       </div>
     </div>
   );
 };
 
-export default AddItems;
+export default UpdateItem;

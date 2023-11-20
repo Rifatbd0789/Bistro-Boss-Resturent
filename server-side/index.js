@@ -26,7 +26,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const menuCollection = client.db("BistroBossDB").collection("Menu");
+    const menuCollection = client.db("BistroBossDB").collection("menu");
     const userCollection = client.db("BistroBossDB").collection("users");
     const reviewCollection = client.db("BistroBossDB").collection("reviews");
     const cartCollection = client.db("BistroBossDB").collection("carts");
@@ -119,9 +119,46 @@ async function run() {
         res.send(result);
       }
     );
-    // load menu
+    // add item to menu
+    app.post("/menu", verifyToken, verifyAdmin, async (req, res) => {
+      const menuItem = req.body;
+      const result = await menuCollection.insertOne(menuItem);
+      res.send(result);
+    });
+    // load all menu
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
+      res.send(result);
+    });
+    // load one item to update
+    app.get("/menu/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await menuCollection.findOne(query);
+      res.send(result);
+    });
+    // update the menu
+    app.patch("/menu/:id", async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          name: item.name,
+          category: item.category,
+          price: item.price,
+          recipe: item.recipe,
+          image: item.image,
+        },
+      };
+      const result = await menuCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+    // delete menu
+    app.delete("/menu/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await menuCollection.deleteOne(query);
       res.send(result);
     });
     // load reviews
