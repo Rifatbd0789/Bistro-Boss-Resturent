@@ -54,7 +54,7 @@ const UpdateItem = () => {
               <span className="label-text">Recipe Name*</span>
             </label>
             <input
-              {...register("name", { required: true })}
+              {...register("name")}
               type="text"
               defaultValue={name}
               placeholder="Recipe Name..."
@@ -69,7 +69,7 @@ const UpdateItem = () => {
               </label>
               <select
                 defaultValue={category}
-                {...register("category", { required: true })}
+                {...register("category")}
                 className="select select-bordered w-full "
               >
                 <option disabled value="default">
@@ -88,7 +88,7 @@ const UpdateItem = () => {
                 <span className="label-text">Price*</span>
               </label>
               <input
-                {...register("price", { required: true })}
+                {...register("price")}
                 defaultValue={price}
                 type="number"
                 placeholder="price..."
@@ -114,7 +114,7 @@ const UpdateItem = () => {
           {/* imatge input */}
           <div className="form-control w-full my-6">
             <input
-              {...register("image", { required: true })}
+              {...register("image")}
               type="file"
               className="file-input w-full max-w-xs"
             />

@@ -56,13 +56,14 @@ const AuthProvider = ({ children }) => {
         axiosOpen.post("/jwt", userInfo).then((res) => {
           if (res.data.token) {
             localStorage.setItem("token", res.data.token);
+            setLoading(false);
           }
         });
       } else {
         // remove token
         localStorage.removeItem("token");
+        setLoading(false);
       }
-      setLoading(false);
     });
     return () => {
       return unsubscribe();
